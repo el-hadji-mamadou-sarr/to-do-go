@@ -1,5 +1,8 @@
 # TO DO List Management with Go/Gin
 
+# Team
+-   Thierno Sadou Barry
+
 ## Overview
 
 This is a simple to do list management application built with Go and Gin. It allows you to create, read, update and delete to do list items.
