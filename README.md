@@ -1,56 +1,20 @@
-# API REST en Go - Gestion de Tâches (TODO)
+# TO DO List Management with Go/Gin
 
-## Objectif
+## Overview
 
-Créer une API REST simple en Go qui gère une liste de tâches (TODO). Cette API devra être extensible pour les prochaines étapes du projet.
+This is a simple to do list management application built with Go and Gin. It allows you to create, read, update and delete to do list items.
 
-## Instructions
+## Features
 
-### 1. Initialiser un projet Go
+- Create a new to do list item
+- Read all to do list items
+- Update a to do list item
+- Delete a to do list item
 
-- Créez un dossier pour le projet.
-- Initialisez un module Go avec la commande suivante :
+## Usage
 
-  ```sh
-  go mod init votre_nom_de_module
-  ```
-
-### 2. Installer les dépendances
-
-- Utilisez le package `github.com/gin-gonic/gin` pour créer l’API.
-- Installez-le avec la commande :
-
-  ```sh
-  go get github.com/gin-gonic/gin
-  ```
-
-### 3. Développer un premier endpoint
-
-- Implémentez un serveur HTTP avec un seul endpoint :
-
-  - `GET /tasks` : Retourne une liste vide de tâches sous format JSON.
-
-### 4. Tester l’API
-
-- Lancez le serveur et vérifiez que `GET /tasks` fonctionne correctement.
-
-## Exécution
-
-Pour exécuter l’API, utilisez la commande suivante :
-
-```sh
-go run main.go
+```bash
+go run cmd/api/main.go
 ```
 
-## Vérification
-
-Une fois le serveur lancé, utilisez un navigateur ou un outil comme `curl` ou Postman pour tester l'endpoint :
-
-```sh
-curl http://localhost:8080/tasks
-```
-
-
-**Auteurs :** [Souleymane SALL, ]  
-**Date :** [20 Février 2025 ]
-
+## API Endpoints
