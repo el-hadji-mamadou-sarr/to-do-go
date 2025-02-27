@@ -2,6 +2,7 @@
 
 # Team
 -   Thierno Sadou Barry
+-   El Hadji Mamadou SARR
 
 ## Overview
 
