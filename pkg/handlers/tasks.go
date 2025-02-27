@@ -37,3 +37,40 @@ func DeleteTask(c *gin.Context) {
 	}
 	c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 }
+
+func UpdateTask(c *gin.Context) {
+	// Récupérer l'ID depuis les paramètres d'URL
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de tâche invalide"})
+		return
+	}
+
+	// Rechercher la tâche correspondante
+	var taskIndex = -1
+	for i, task := range tasks {
+		if task.ID == id {
+			taskIndex = i
+			break
+		}
+	}
+	if taskIndex == -1 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Tâche introuvable"})
+		return
+	}
+
+	// Analyser le corps de la requête
+	var updatedTask models.Task
+	if err := c.ShouldBindJSON(&updatedTask); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Mettre à jour les champs modifiables (sauf l'ID)
+	tasks[taskIndex].Title = updatedTask.Title
+	tasks[taskIndex].Completed = updatedTask.Completed
+	// Ajouter ici d'autres champs à mettre à jour si nécessaire
+
+	c.JSON(http.StatusOK, tasks[taskIndex])
+}
