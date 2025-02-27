@@ -3,6 +3,7 @@
 # Team
 -   Thierno Sadou Barry
 -   El Hadji Mamadou SARR
+-   Arthur Deumeni Tsako
 
 ## Overview
 
