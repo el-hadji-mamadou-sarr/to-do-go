@@ -28,14 +28,14 @@ func CreateTask(c *gin.Context) {
 }
 
 func DeleteTask(c *gin.Context) {
-	taskID := c.Param("id")
+	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de tâche invalide"})
 		return
 	}
 	for i, task := range tasks {
-		if task.ID == taskID {
+		if task.ID == id {
 			tasks = append(tasks[:i], tasks[i+1:]...)
 			c.JSON(http.StatusOK, gin.H{"message": "Task deleted"})
 			return
