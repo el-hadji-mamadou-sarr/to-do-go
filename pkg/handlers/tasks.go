@@ -29,6 +29,11 @@ func CreateTask(c *gin.Context) {
 
 func DeleteTask(c *gin.Context) {
 	taskID := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de tâche invalide"})
+		return
+	}
 	for i, task := range tasks {
 		if task.ID == taskID {
 			tasks = append(tasks[:i], tasks[i+1:]...)
@@ -70,7 +75,7 @@ func UpdateTask(c *gin.Context) {
 
 	// Mettre à jour les champs modifiables (sauf l'ID)
 	tasks[taskIndex].Title = updatedTask.Title
-	tasks[taskIndex].Completed = updatedTask.Completed
+	tasks[taskIndex].Status = updatedTask.Status
 	// Ajouter ici d'autres champs à mettre à jour si nécessaire
 
 	c.JSON(http.StatusOK, tasks[taskIndex])
