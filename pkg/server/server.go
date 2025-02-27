@@ -7,6 +7,9 @@ import (
 )
 
 func SetupRouter() *gin.Engine {
+
+	handlers.LoadTasks()
+
 	r := gin.Default()
 
 	r.GET("/tasks", handlers.GetTasks)
