@@ -3,6 +3,7 @@
 # Team
 -   Thierno Sadou Barry
 -   El Hadji Mamadou SARR
+-   Arold Ngouani Yapteu
 
 ## Overview
 
