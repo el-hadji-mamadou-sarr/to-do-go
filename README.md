@@ -4,6 +4,9 @@
 -   Thierno Sadou Barry
 -   El Hadji Mamadou SARR
 -   Arthur Deumeni Tsako
+-   Arold Ngouani Yapteu
+-   Souleymane SALL
+
 
 ## Overview
 
