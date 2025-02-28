@@ -7,10 +7,15 @@ import (
 )
 
 func SetupRouter() *gin.Engine {
+
+	handlers.LoadTasks()
+
 	r := gin.Default()
 
 	r.GET("/tasks", handlers.GetTasks)
 	r.POST("/tasks", handlers.CreateTask)
+	r.PUT("/tasks/:id", handlers.UpdateTask)
+	r.DELETE("/tasks/:id", handlers.DeleteTask)
 
 	return r
 }

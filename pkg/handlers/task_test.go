@@ -78,3 +78,31 @@ func TestCreateTaskHandlerInvalidJSON(t *testing.T) {
 
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 }
+
+// test pour vérifier que l'on peut pas modifier une tache existante
+func TestUpdateExistingTask(t *testing.T) {
+	setupTest()
+	// Création d'une tâche existante
+	tasks = append(tasks, models.Task{ID: 1, Title: "Tâche existante", Status: "pending"})
+
+	// Données de la requête
+	task := map[string]string{"title": "Tâche modifiée", "status": "completed"}
+	jsonValue, _ := json.Marshal(task)
+
+	// Création d'une requête HTTP simulée
+	req, _ := http.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(jsonValue))
+	req.Header.Set("Content-Type", "application/json")
+
+	// Création du contexte Gin de test
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = req
+	c.Params = []gin.Param{{Key: "id", Value: "1"}}
+
+	UpdateTask(c)
+
+	// Vérifications
+	assert.Equal(t, http.StatusOK, w.Code)
+	expectedResponse := `{"id":1,"title":"Tâche modifiée","status":"completed"}`
+	assert.JSONEq(t, expectedResponse, w.Body.String())
+}
