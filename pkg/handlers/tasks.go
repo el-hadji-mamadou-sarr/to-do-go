@@ -1,21 +1,27 @@
 package handlers
 
 import (
+	"fmt"
+	"sync"
+	"time"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
 	"to-do-go/pkg/models"
-
 	"github.com/gin-gonic/gin"
+	
 )
 
-var tasks []models.Task
+var (
+	tasks []models.Task
+	mu    sync.Mutex // Ensures thread safety if accessed concurrently
+)
+
 
 const taskFile = "tasks.json"
 
-// Load tasks from file
 func LoadTasks() error {
 	file, err := os.Open(taskFile)
 	if err != nil {
@@ -35,7 +41,6 @@ func LoadTasks() error {
 	return json.Unmarshal(data, &tasks)
 }
 
-// Save tasks to file
 func SaveTasks() error {
 	data, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
@@ -44,31 +49,34 @@ func SaveTasks() error {
 	return ioutil.WriteFile(taskFile, data, 0644)
 }
 
-// Get all tasks
 func GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-// Create a new task
+// CreateTask - Creates a new task
 func CreateTask(c *gin.Context) {
 	var newTask models.Task
 	if err := c.ShouldBindJSON(&newTask); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request: " + err.Error()})
 		return
 	}
 
-	newTask.ID = len(tasks) + 1
-	tasks = append(tasks, newTask)
+	mu.Lock()
+	defer mu.Unlock()
+
+	taskID := len(tasks) + 1
+	createdTask := models.NewTask(taskID, newTask.Title)
+
+	tasks = append(tasks, *createdTask)
 
 	if err := SaveTasks(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save task"})
 		return
 	}
 
-	c.JSON(http.StatusCreated, newTask)
+	c.JSON(http.StatusCreated, createdTask)
 }
 
-// Delete a task
 func DeleteTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -91,7 +99,6 @@ func DeleteTask(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 }
 
-// Update an existing task
 func UpdateTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -129,3 +136,42 @@ func UpdateTask(c *gin.Context) {
 
 	c.JSON(http.StatusOK, tasks[taskIndex])
 }
+
+func ProcessTask(c *gin.Context) {
+	id := c.Param("id")
+
+	c.JSON(200, gin.H{"message": "Le traitement de la tâche a commencé", "task_id": id})
+
+	go func(taskID string) {
+		fmt.Printf("[Tâche %s] Début du traitement...\n", taskID)
+
+		// set the task status to pending
+		for i, task := range tasks {
+			if strconv.Itoa(task.ID) == taskID {
+				tasks[i].Status = models.Pending
+				break
+			}
+		}
+
+		time.Sleep(1 * time.Second)
+		fmt.Printf("[Tâche %s] Étape 1: Initialisation terminée.\n", taskID)
+
+		time.Sleep(2 * time.Second)
+		fmt.Printf("[Tâche %s] Étape 2: Traitement en cours...\n", taskID)
+
+		time.Sleep(1 * time.Second)
+		fmt.Printf("[Tâche %s] Étape 3: Finalisation...\n", taskID)
+
+		// set the task status to completed
+		for i, task := range tasks {
+			if strconv.Itoa(task.ID) == taskID {
+				tasks[i].Status = models.Completed
+				break
+			}
+		}
+		
+		time.Sleep(1 * time.Second)
+		fmt.Printf("[Tâche %s] Traitement terminé avec succès !\n", taskID)
+	}(id)
+}
+
