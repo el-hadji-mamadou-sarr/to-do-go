@@ -17,6 +17,6 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/tasks/:id", handlers.UpdateTask)
 	r.DELETE("/tasks/:id", handlers.DeleteTask)
 	r.POST("/tasks/process/:id", handlers.ProcessTask)
-
+	r.POST("/tasks/parallel", handlers.ProcessTasksParallel)
 	return r
 }

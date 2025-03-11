@@ -1,24 +1,23 @@
 package handlers
 
 import (
-	"fmt"
-	"sync"
-	"time"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
+	"time"
 	"to-do-go/pkg/models"
+
 	"github.com/gin-gonic/gin"
-	
 )
 
 var (
 	tasks []models.Task
 	mu    sync.Mutex // Ensures thread safety if accessed concurrently
 )
-
 
 const taskFile = "tasks.json"
 
@@ -169,9 +168,29 @@ func ProcessTask(c *gin.Context) {
 				break
 			}
 		}
-		
+
 		time.Sleep(1 * time.Second)
 		fmt.Printf("[Tâche %s] Traitement terminé avec succès !\n", taskID)
 	}(id)
 }
 
+func ProcessTasksParallel(c *gin.Context) {
+	var taskIDs = []int{1, 2, 3, 4, 5}
+	var wg sync.WaitGroup
+	wg.Add(len(taskIDs))
+
+	for _, id := range taskIDs {
+		go func(taskID int) {
+			defer wg.Done()
+			time.Sleep(5 * time.Second)
+		}(id)
+	}
+
+	// Attendre que toutes les tâches soient terminées
+	wg.Wait()
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Toutes les tâches ont été traitées",
+		"tasks":   taskIDs,
+	})
+}
