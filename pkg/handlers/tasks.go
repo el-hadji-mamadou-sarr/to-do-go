@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"fmt"
+	"time"
+
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -15,7 +18,6 @@ var tasks []models.Task
 
 const taskFile = "tasks.json"
 
-// Load tasks from file
 func LoadTasks() error {
 	file, err := os.Open(taskFile)
 	if err != nil {
@@ -35,7 +37,6 @@ func LoadTasks() error {
 	return json.Unmarshal(data, &tasks)
 }
 
-// Save tasks to file
 func SaveTasks() error {
 	data, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
@@ -44,12 +45,10 @@ func SaveTasks() error {
 	return ioutil.WriteFile(taskFile, data, 0644)
 }
 
-// Get all tasks
 func GetTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, tasks)
 }
 
-// Create a new task
 func CreateTask(c *gin.Context) {
 	var newTask models.Task
 	if err := c.ShouldBindJSON(&newTask); err != nil {
@@ -68,7 +67,6 @@ func CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, newTask)
 }
 
-// Delete a task
 func DeleteTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -91,7 +89,6 @@ func DeleteTask(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 }
 
-// Update an existing task
 func UpdateTask(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -128,4 +125,27 @@ func UpdateTask(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, tasks[taskIndex])
+}
+
+
+func ProcessTask(c *gin.Context) {
+	id := c.Param("id")
+
+	c.JSON(200, gin.H{"message": "Le traitement de la tâche a commencé", "task_id": id})
+
+	go func(taskID string) {
+		fmt.Printf("[Tâche %s] Début du traitement...\n", taskID)
+
+		time.Sleep(1 * time.Second)
+		fmt.Printf("[Tâche %s] Étape 1: Initialisation terminée.\n", taskID)
+
+		time.Sleep(2 * time.Second)
+		fmt.Printf("[Tâche %s] Étape 2: Traitement en cours...\n", taskID)
+
+		time.Sleep(1 * time.Second)
+		fmt.Printf("[Tâche %s] Étape 3: Finalisation...\n", taskID)
+
+		time.Sleep(1 * time.Second)
+		fmt.Printf("[Tâche %s] Traitement terminé avec succès !\n", taskID)
+	}(id)
 }
