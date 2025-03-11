@@ -9,8 +9,6 @@ const (
 	Completed Status = "completed"
 )
 
-const newTaskId = 
-
 // Task represents a task with an ID, title, and status
 type Task struct {
 	ID     int    `json:"id"`
@@ -18,7 +16,7 @@ type Task struct {
 	Status Status `json:"status"`
 }
 
-//new task with default format
+// new task with default format
 func NewTask(id int, title string) *Task {
 	return &Task{
 		ID:     id,
